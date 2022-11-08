@@ -1,1 +1,1 @@
-# Baekjoon&SWEA Algorithm
+# Baekjoon & SWEA Algorithm
