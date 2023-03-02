@@ -1,147 +1,173 @@
-import static java.util.Arrays.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
-import java.util.Stack;
-import java.util.stream.Collectors;
+import java.util.StringTokenizer;
 
 public class Main {
 
-    static int n;
-    static int[][] map;
-    static int ans = 0;
+	static int N;
+	static int[][] map;
+	static final int CHANCE = 5;
+	static int answer = 0;
+	
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
+		
+		N = Integer.parseInt(br.readLine());
+		
+		map = new int[N][N];
+		
+		for(int i=0;i<N;i++) {
+			st = new StringTokenizer(br.readLine()," ");
+			for(int j=0;j<N;j++) {
+				map[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
+		
+		dfs(0);
+		System.out.println(answer);
+	}
+	
+	private static void dfs(int idx) {
+		if(idx == CHANCE) {
+			for(int i=0;i<N;i++) {
+				for(int j=0;j<N;j++) {
+					answer = Math.max(answer, map[i][j]);
+				}
+			}
+			return;
+		}
+		
+		int[][] copyMap = new int[N][N];
+		for(int j=0;j<N;j++) {
+			copyMap[j] = map[j].clone();
+		}
+		
+		//우, 좌, 하, 상
+		for(int i=0;i<4;i++) {
+			move(i);
+			dfs(idx+1);
+			for(int j=0;j<N;j++) {
+				map[j] = copyMap[j].clone();
+			}
+		}
+	}
+	
+	
+	private static void move(int dir) {
+		LinkedList<Integer> list = new LinkedList<>();
+		
+		if(dir == 0) {									//우
+			for(int i=0;i<N;i++) {
+				for(int j=0;j<N;j++) {
+					if(map[i][j] != 0) {
+						list.add(map[i][j]);
+					}
+					map[i][j] = 0;
+				}
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        n = Integer.parseInt(br.readLine());
-        map = new int[n][n];
-        for (int i = 0; i < n; i++) {
-            map[i] = stream(br.readLine().split(" "))
-                    .mapToInt(Integer::parseInt).toArray();
-        } // end input
+				int idx= 0;
+				while(!list.isEmpty()) {
+					Integer cur = list.poll();
+					
+					if(map[i][idx]==0) {
+						map[i][idx] = cur;
+					}
+					else if(map[i][idx] == cur) {//숫자 같으면 병합
+						map[i][idx] = cur* 2;
+						idx++;
+					}
+					else {
+						idx++;
+						map[i][idx] = cur;
+					}
+				}
+			}
+			
+		}
+		else if(dir == 1) {								//좌
+			for(int i=0;i<N;i++) {
+				for(int j=N-1;j>=0;j--) {
+					if(map[i][j] != 0) {
+						list.add(map[i][j]);
+					}
+					map[i][j] = 0;
+				}
+				
+				int idx = N-1;
+				while(!list.isEmpty()) {
+					Integer cur = list.poll();
+					
+					if(map[i][idx]==0) {
+						map[i][idx] = cur;
+					}
+					else if(map[i][idx] == cur) {//숫자 같으면 병합
+						map[i][idx]= cur* 2;
+						idx--;
+					}
+					else {
+						idx--;
+						map[i][idx] = cur;
+					}
+				}
+			}
+			
+		}
+		else if(dir == 2) {								//하
+			for(int i=0;i<N;i++) {
+				for(int j=N-1;j>=0;j--) {
+					if(map[j][i] != 0) {
+						list.add(map[j][i]);
+					}
+					map[j][i] = 0;
+				}
 
-        rotate(0);
-        System.out.println(ans);
-    }
+				int idx = N-1;
+				while(!list.isEmpty()) {
+					Integer cur = list.poll();
+					
+					if(map[idx][i]==0) {
+						map[idx][i] = cur;
+					}
+					else if(map[idx][i] == cur) {//숫자 같으면 병합
+						map[idx][i]= cur* 2;
+						idx--;
+					}
+					else {
+						idx--;
+						map[idx][i] = cur;
+					}
+				}
+			}
+		}
+		else if(dir == 3) {								//상
+			for(int i=0;i<N;i++) {
+				for(int j=0;j<N;j++) {
+					if(map[j][i] != 0) {
+						list.add(map[j][i]);
+					}
+					map[j][i] = 0;
+				}
 
-    private static void rotate(int count) { // dfs
-
-        if(count==5){ // 5번 움직였을 때 종결
-            for(int i=0;i<n;i++)
-                for(int j=0;j<n;j++)
-                    ans = Math.max(ans,map[i][j]); // max 값 갱신
-            return;
-        }
-
-        int[][] nextMap = new int[n][n]; // 이전 상태로 되돌리기 위한 배열 복사
-        for(int k=0;k<n;k++)
-            nextMap[k] = map[k].clone();
-
-        for(int i=0;i<4;i++){ // 우,좌,하,상
-            move(i);
-            rotate(count+1);
-            for(int k=0;k<n;k++)
-                map[k] = nextMap[k].clone(); // 원복
-        }
-    }
-
-    static void move(int dir) { // 해당 방향에서 움직이는 함수
-
-        LinkedList<Integer> q = new LinkedList<>(); // 한번 움직임에 두 번 이상 합쳐짐을 방지하기 위한 큐
-
-        if (dir == 0) { // 우
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (map[i][j] != 0)
-                        q.add(map[i][j]); // 큐에 삽입
-                    map[i][j] = 0;
-                }
-
-                int index = 0; // 0부터 시작
-                while (!q.isEmpty()) {
-                    Integer cur = q.poll();
-
-                    if (map[i][index] == 0) { // 0 이면
-                        map[i][index] = cur;
-                    } else if (map[i][index] == cur) { // 병합하기
-                        map[i][index] = cur * 2;
-                        index++;
-                    } else { // 합쳐질 수 없는 경우 그대로 이동만
-                        index++;
-                        map[i][index] = cur;
-                    }
-                }
-            }
-        } else if (dir == 1) { // 좌
-            for (int i = 0; i < n; i++) {
-                for (int j = n - 1; j >= 0; j--) {
-                    if (map[i][j] != 0)
-                        q.add(map[i][j]);
-                    map[i][j] = 0;
-                }
-
-                int index = n - 1;
-                while (!q.isEmpty()) {
-                    Integer cur = q.poll();
-
-                    if (map[i][index] == 0) {
-                        map[i][index] = cur;
-                    } else if (map[i][index] == cur) {
-                        map[i][index] = cur * 2;
-                        index--;
-                    } else {
-                        index--;
-                        map[i][index] = cur;
-                    }
-                }
-            }
-        } else if (dir == 2) { // 하
-            for (int i = 0; i < n; i++) {
-                for (int j = n - 1; j >= 0; j--) {
-                    if (map[j][i] != 0)
-                        q.add(map[j][i]);
-                    map[j][i] = 0;
-                }
-
-                int index = n - 1;
-                while (!q.isEmpty()) {
-                    Integer cur = q.poll();
-
-                    if (map[index][i] == 0) {
-                        map[index][i] = cur;
-                    } else if (map[index][i] == cur) {
-                        map[index][i] = cur * 2;
-                        index--;
-                    } else {
-                        index--;
-                        map[index][i] = cur;
-                    }
-                }
-            }
-        } else if (dir == 3) { // 상
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (map[j][i] != 0)
-                        q.add(map[j][i]);
-                    map[j][i] = 0;
-                }
-
-                int index = 0;
-                while (!q.isEmpty()) {
-                    Integer cur = q.poll();
-
-                    if (map[index][i] == 0) {
-                        map[index][i] = cur;
-                    } else if (map[index][i] == cur) {
-                        map[index][i] = cur * 2;
-                        index++;
-                    } else {
-                        index++;
-                        map[index][i] = cur;
-                    }
-                }
-            }
-        }
-    }
+				int idx = 0;
+				while(!list.isEmpty()) {
+					Integer cur = list.poll();
+					
+					if(map[idx][i]==0) {
+						map[idx][i] = cur;
+					}
+					else if(map[idx][i] == cur) {//숫자 같으면 병합
+						map[idx][i] = cur* 2;
+						idx++;
+					}
+					else {
+						idx++;
+						map[idx][i] = cur;
+					}
+				}
+			}
+		}
+	}
 }
