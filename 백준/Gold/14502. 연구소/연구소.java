@@ -7,7 +7,6 @@ import java.util.StringTokenizer;
 
 class Point{
 	int r, c;
-
 	public Point(int r, int c) {
 		this.r = r;
 		this.c = c;
@@ -23,7 +22,6 @@ public class Main {
 	static int WALL = 3;
 
 	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st;
 		
@@ -73,7 +71,6 @@ public class Main {
 		}
 		
 		copy();
-		
 		while(!q.isEmpty()) {
 			int r = q.peek().r;
 			int c = q.poll().c;
@@ -89,7 +86,6 @@ public class Main {
 				}
 			}
 		}
-		
 		checkSafe();
 	}
 	
