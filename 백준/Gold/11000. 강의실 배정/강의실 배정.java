@@ -7,21 +7,21 @@ import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Main {
-	static class Lecture implements Comparable<Lecture>{
+	
+	static class Lecture implements Comparable<Lecture> {
 		int start, end;
-
-		public Lecture(int start, int end) {
-			super();
+		
+		public Lecture(int start,int end) {
 			this.start = start;
 			this.end = end;
 		}
-
+		
 		@Override
 		public int compareTo(Lecture o) {
-			if(this.start == o.start)
+			if(this.start == o.start) {
 				return this.end - o.end;
-			else
-				return this.start-o.start;
+			}
+			return this.start - o.start;
 		}
 	}
 
@@ -30,11 +30,11 @@ public class Main {
 		StringTokenizer st = null;
 		
 		int N = Integer.parseInt(br.readLine());
-		ArrayList<Lecture> lectures = new ArrayList<>();
 		
+		ArrayList<Lecture> lectures = new ArrayList<>();
 		for(int i=0;i<N;i++) {
 			st = new StringTokenizer(br.readLine()," ");
-			int start =Integer.parseInt(st.nextToken());
+			int start = Integer.parseInt(st.nextToken());
 			int end = Integer.parseInt(st.nextToken());
 			lectures.add(new Lecture(start, end));
 		}
@@ -43,15 +43,14 @@ public class Main {
 		
 		PriorityQueue<Integer> pq = new PriorityQueue<>();
 		int endTime = 0;
-		for(Lecture l: lectures) {
-			endTime = l.end;
+		for(int i=0;i<N;i++) {
+			endTime = lectures.get(i).end;
 			
-			if(!pq.isEmpty() && pq.peek() <= l.start) {
+			if(!pq.isEmpty() && pq.peek() <= lectures.get(i).start) {
 				pq.poll();
 			}
 			pq.add(endTime);
 		}
 		System.out.println(pq.size());
 	}
-
 }
