@@ -1,18 +1,17 @@
 class Solution {
-    int N, maxMinus = -1;
+    int max = -1;
     int[] arr;
     int[] answer = {-1};
     
     public int[] solution(int n, int[] info) {
-        N = n;
         
         arr = new int[11];
-        dfs(info, 0, 0);
+        dfs(info, 0, 0, n);
         
         return answer;
     }
     
-    public void dfs(int[] info, int idx, int cnt) {
+    public void dfs(int[] info, int idx, int cnt, int N) {
         if(idx == 11) {
             if(cnt == N) {
                 int apeachScore = 0;
@@ -24,11 +23,11 @@ class Solution {
                 }
                 
                 if(lionScore > apeachScore) {
-                    if(lionScore - apeachScore > maxMinus) {
-                        maxMinus = lionScore - apeachScore;
+                    if(lionScore - apeachScore > max) {
+                        max = lionScore - apeachScore;
                         answer = arr.clone();
                     }
-                    else if((lionScore - apeachScore) == maxMinus) {
+                    else if((lionScore - apeachScore) == max) {
                         for(int i=10;i>=0;i--) {
                             if(answer[i] < arr[i]){
                                 answer = arr.clone();
@@ -43,17 +42,17 @@ class Solution {
         }
         
         if(info[idx] == 0) {    // 둘다 0으로 점수 받기
-            dfs(info, idx+1, cnt);
+            dfs(info, idx+1, cnt, N);
         }
         if((cnt+1)+info[idx] <= N) {    // 어피치한테 이기는 경우
             arr[idx] = info[idx]+1;
-            dfs(info, idx+1, cnt+1+info[idx]);
+            dfs(info, idx+1, cnt+1+info[idx], N);
             arr[idx] = 0;
         }
         if(info[idx] != 0) {    // 어피치한테 지는 경우
             for(int i=0;i<=info[idx];i++) {
                 arr[idx] = i;
-                dfs(info, idx+1, cnt+i);
+                dfs(info, idx+1, cnt+i, N);
                 arr[idx] = 0;
             }
         }
