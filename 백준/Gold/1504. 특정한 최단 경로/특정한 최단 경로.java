@@ -22,6 +22,7 @@ public class Main {
 	static ArrayList<Node>[] list;
 	// Integer.MAX_VALUE로 하면 X
 	// -> 간선 개수(E) * 거리(C) = 200,000 * 1,000 = 200_000_000;
+	// 한번에 도달하는 것이 아니라 경로를 거쳐서 가는 것이기 때문
 	static final int INF = 200_000_000;
 
 	public static void main(String[] args) throws IOException {
@@ -62,7 +63,7 @@ public class Main {
 		result2 += dijkstra(n2, n1);
 		result2 += dijkstra(n1, N-1);
 		
-		int answer = (result1 >= INF && result2 >= INF)? -1: Math.min(result1, result2);
+		int answer = (result1 >= INF || result2 >= INF)? -1: Math.min(result1, result2);
 		System.out.println(answer);
 	}
 	
