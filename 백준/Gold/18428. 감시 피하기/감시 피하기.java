@@ -1,4 +1,5 @@
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 	
@@ -8,15 +9,17 @@ public class Main {
 	static int moveC[] = { 0, 0, -1, 1 };
 	static int answer;
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		N = sc.nextInt();
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = null;
+
+		N =  Integer.parseInt(br.readLine());
 		map = new char[N][N];
 
 		for(int i=0; i<N; i++) {
+            st = new StringTokenizer(br.readLine()," ");
 			for(int j=0; j<N; j++) {
-				String s = sc.next();
-				map[i][j] = s.charAt(0);
+				map[i][j] = st.nextToken().charAt(0);
 			}
 			
 		}
