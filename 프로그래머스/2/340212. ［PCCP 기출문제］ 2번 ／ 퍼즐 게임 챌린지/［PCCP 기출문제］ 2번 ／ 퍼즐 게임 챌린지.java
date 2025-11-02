@@ -1,41 +1,42 @@
-import java.util.*;
-
-/*
-    풀이 방법: 이진탐색
-*/
-
-class Solution {    
+class Solution {
     public int solution(int[] diffs, int[] times, long limit) {
-        return binarySearch(diffs, times, limit);
-    }
-    
-    public int binarySearch(int[] diffs, int[] times, long limit) {
-        int min = 100000;
-        int max = 1;
+        int answer = 0;
+        int N = diffs.length;
         
-        while(max <= min) {
-            int midLevel = (min+max) / 2;
+        int max = 0;
+        
+        for(int diff : diffs){
+            max = Math.max(diff, max);
+        }
+        
+        int left = 1;
+        int right = max;
+        
+        while(left <= right){
+            int mid = (left + right) / 2;
             
-            long mid = 0;
+            long sum = 0;
             
-            for(int i=0;i<diffs.length;i++) {
-                if(diffs[i] <= midLevel) {
-                    mid += times[i];
-                }
-                else {
-                    mid += (long)(times[i] + times[i-1]) * (long)(diffs[i] - midLevel) + times[i];
+            for(int i = 0; i < N; i++){
+                if(diffs[i] <= mid){
+                    sum += times[i];
+                } else{
+                    if(i == 0){
+                        sum = limit++;
+                        break;
+                    }
+                    sum += ((times[i] + times[i - 1]) * (diffs[i] - mid)) + times[i];
                 }
             }
             
-            // 제한 시간을 초과한 경우
-            if(mid > limit) {
-                max = midLevel + 1;
-            }
-            else {
-                min = midLevel - 1;
+            // System.out.println("left: " + left + ", right: " + right + ", mid: " + mid + ", sum: " + sum);
+            if(sum <= limit){
+                right = mid - 1;
+            } else{
+                left = mid + 1;
             }
         }
         
-        return max;
+        return left;
     }
 }
