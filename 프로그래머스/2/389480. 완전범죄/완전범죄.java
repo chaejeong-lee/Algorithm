@@ -1,39 +1,43 @@
 import java.util.*;
 
 class Solution {
-
-    final int INF = 100001;
-
     public int solution(int[][] info, int n, int m) {
         int size = info.length;
+        int[][] dp = new int[size + 1][m];
+        int INF = 999999;
         
-        int [][] dp = new int [size+1][m];
-        
-        for(int i=0;i<dp.length;i++) {
+        for(int i=0;i<=size;i++) {
             Arrays.fill(dp[i], INF);
         }
         
         dp[0][0] = 0;
         
-        for(int i=1;i<dp.length;i++) {
-            int num1 = info[i-1][0];
-            int num2 = info[i-1][1];
+        for(int i=1;i<=size;i++) {
+            int a = info[i-1][0];
+            int b = info[i-1][1];
             
             for(int j=0;j<m;j++) {
-                dp[i][j] = Math.min(dp[i][j], dp[i-1][j]+num1);
+                // a 선택
+                dp[i][j] = Math.min(dp[i][j], dp[i-1][j] + a);
                 
-                if(j+num2 < m) {
-                    dp[i][j + num2] = Math.min(dp[i][j + num2], dp[i-1][j]);
+                if(b + j < m) {
+                    dp[i][j+b] = Math.min(dp[i][j+b], dp[i-1][j]);
                 }
             }
         }
         
         int answer = INF;
-        
-        for(int i=0;i<m;i++) {
-            answer = Math.min(dp[size][i], answer);
+        for(int i=0;i<dp.length;i++) {
+            for(int j=0;j<dp[i].length;j++) {
+                System.out.print(dp[i][j]+" ");
+            }
+            System.out.println();
         }
         
-        return answer >= n ? -1 : answer;
+        for(int i=0;i<m;i++) {
+            answer = Math.min(answer, dp[size][i]);
+        }
+        
+        return answer >=n?-1:answer;
     }
 }
