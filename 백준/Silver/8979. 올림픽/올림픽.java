@@ -51,7 +51,7 @@ public class Main {
 			
 			if(cur.idx == K) break;
 			
-			if(cur.gold == next.gold && cur.silver == next.silver && cur.cooper == cur.cooper) {
+			if(cur.gold == next.gold && cur.silver == next.silver && cur.cooper == next.cooper) {
 				diff++;
 			}
 			else {
