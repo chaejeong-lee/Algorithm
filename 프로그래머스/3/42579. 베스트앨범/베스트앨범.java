@@ -1,44 +1,62 @@
 import java.util.*;
 
 class Solution {
-    public List<Integer> solution(String[] genres, int[] plays) {
-        HashMap<String, Integer> hm = new HashMap<>();
-        List<Integer> answer = new LinkedList<>();
+    public class Album implements Comparable<Album> {
+        int idx, point;
         
-        // 총 합을 기준으로 genres 총 개수 순위 나열
-        for(int i=0;i<genres.length;i++) {
-            hm.put(genres[i], hm.getOrDefault(genres[i], 0) + plays[i]);
+        public Album(int idx, int point) {
+            this.idx = idx;
+            this.point = point;
         }
         
-        List<String> list = new LinkedList<>(hm.keySet());
-        Collections.sort(list, (o1, o2) -> {
-            return hm.get(o2) - hm.get(o1);
+        @Override
+        public int compareTo(Album a) {
+            if(a.point == this.point) return this.idx - a.idx;
+            return a.point - this.point;
+        }
+    }
+    
+    public class Genre {
+        int total;
+        PriorityQueue<Album> pq;
+        
+        public Genre(int total) {
+            this.total = total;
+            pq = new PriorityQueue<>();
+        }
+        
+        public void add(int point) {
+            total += point;
+        }
+    }
+    public List<Integer> solution(String[] genres, int[] plays) {
+        HashMap<String, Genre> hm = new HashMap<>();
+        for(int i = 0; i<genres.length;i++) {
+            if(!hm.containsKey(genres[i])) {
+                hm.put(genres[i], new Genre(plays[i]));
+            }
+            else {
+                hm.get(genres[i]).add(plays[i]);
+            }
+            hm.get(genres[i]).pq.add(new Album(i, plays[i]));
+        }
+        
+        List<Map.Entry<String, Genre>> list = new ArrayList<>(hm.entrySet());
+        list.sort((e1, e2) -> {
+            return e2.getValue().total - e1.getValue().total;
         });
         
-        // 각각의 genres의 정렬
-        for(String curGenre: list) {
-            HashMap<Integer, Integer> genrePlays = new HashMap<>();
-            for(int i=0;i<genres.length;i++) {
-                if(genres[i].equals(curGenre)) {
-                    genrePlays.put(i, plays[i]);
+        List<Integer> answer = new ArrayList<>();
+        for(int i=0;i<list.size();i++) {
+            int s = list.get(i).getValue().pq.size();
+            for(int j=0;j<s;j++) {
+                if(j == 2) {
+                    break;
                 }
-            }
-            
-            // hashmap에 저장한 부분 list로 정렬하기
-            List<Integer> playList = new LinkedList<>(genrePlays.keySet());
-            Collections.sort(playList, (o1, o2) -> {
-                return genrePlays.get(o2) - genrePlays.get(o1);
-            });
-            
-            for(int i=0;i<playList.size();i++) {
-                if(i == 2) break;
-                answer.add(playList.get(i));
+                Album cur = list.get(i).getValue().pq.poll();
+                answer.add(cur.idx);
             }
         }
-        
-        
-        
         return answer;
     }
 }
-
