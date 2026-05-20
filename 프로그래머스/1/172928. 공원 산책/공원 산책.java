@@ -1,111 +1,56 @@
-import java.util.*;
-
 class Solution {
+    int[][] map;
+    int startR = 0, startC = 0;
+    
+    int[][] dir = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    
     public int[] solution(String[] park, String[] routes) {
-        int[] answer = new int[2];
-        int x = -1;  //시작지점이자 최종 위치
-        int y = -1;  //시작지점이자 최종 위치
-        int height = park.length;   //공원 높이
-        int weight = park[0].length();    //공원 넓이
+        map = new int[park.length][park[0].length()];
         
-        //공원 순회
-        for(int i=0;i<park.length;i++){
-            if(park[i].indexOf('S') != -1){
-                x = park[i].indexOf('S');
-                y = i;
-                break;
+        for(int i=0;i<park.length;i++) {
+            for(int j=0;j<park[i].length();j++) {
+                if(park[i].charAt(j) == 'S') {
+                    startR = i;
+                    startC = j;
+                }
+                else if(park[i].charAt(j) == 'X') {
+                    map[i][j] = 1;
+                }
             }
         }
         
-        
-        
-        // 강아지 명령 순회
-        for(int i=0;i<routes.length;i++){
-            String[] temp = routes[i].split(" ");
-            String vector = temp[0];        //방향
-            int distance =  Integer.parseInt(temp[1]);  //거리
-            int currX = x;
-            int currY = y;
+        // 방향에 따라 이동 시작
+        for(int i=0;i<routes.length;i++) {
+            char d = routes[i].charAt(0);
+            int cnt = routes[i].charAt(2) - '0';
             
-            if(vector.equals("E")){ //동
-                boolean flag = true;
-                for(int j=1;j<=distance;j++){
-                    currX++;
-                    if(currX >= weight){	//범위를 벗어났나
-                        flag = false;
-                        break;
-                    }
-                    // 장애물이 있나
-                    else if(park[currY].charAt(currX) =='X'){
-                        flag = false;
-                        break;
-                    }
-                    
-                }
-                if (flag) {
-                    x = currX;
-                }
-            }
-            else if(vector.equals("W")){    //서
-                boolean flag = true;
-                for(int j=1;j<=distance;j++){
-                    currX--;
-                    if(currX < 0){
-                        flag = false;
-                        break;
-                    }
-                    else if(park[currY].charAt(currX) =='X'){
-                        flag = false;
-                        break;
-                    }
-                    
-                }
-                if (flag) {
-                        x = currX;
-                }
-            }
-            else if(vector.equals("S")){    //남
-                boolean flag = true;
-                for(int j=1;j<=distance;j++){
-                    currY++;
-                    if(currY >= height){
-                        flag = false;
-                        break;
-                    }
-                    else if(park[currY].charAt(currX) =='X'){
-                        flag = false;
-                        break;
-                    }
-                    
-                }
-                if (flag) {
-                        y = currY;
-                }
-            }
-            else if(vector.equals("N")){    //북
-                boolean flag = true;
-                for(int j=1;j<=distance;j++){
-                    currY--;
-                    if(currY < 0){
-                        flag = false;
-                        break;
-                    }
-                    else if(park[currY].charAt(currX) =='X'){
-                        flag = false;
-                        break;
-                    }
-                    
-                }
-                if (flag) {
-                    y = currY;
-                }
-            }
-
+            int dd = 0;
+            if(d == 'S') dd = 1;
+            else if(d == 'W') dd = 2;
+            else if(d == 'E') dd = 3;
+            else dd = 0;
+            moveMap(dd, cnt);
         }
         
-        answer[0] = y;
-        answer[1] = x;
-        
-        return answer;
+        return new int[] {startR, startC};
+    }
+    
+    public void moveMap(int d, int cnt) {
+        int nextR = startR;
+        int nextC = startC;
+        for(int i = 0; i<cnt;i++) {
+            nextR += dir[d][0];
+            nextC += dir[d][1];
+            
+            if(!isRange(nextR, nextC)) return;
+            if(map[nextR][nextC] == 1) return;
+            
+        }
+        startR = nextR;
+        startC = nextC;
+    }
+    
+    public boolean isRange(int r, int c) {
+        return 0 <= r && r < map.length && 0 <= c && c < map[0].length;
     }
 }
